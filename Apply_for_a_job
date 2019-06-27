@@ -1,0 +1,98 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Apply_for_a_job extends CI_Controller {
+
+	function __construct() {
+
+		parent::__construct();
+		$this->load->model('Member_model','mem');
+		$this->load->model('Apply_for_a_job_model','apply');
+		//$this->load->model('Admin_model','admin');
+		$this->load->library('form_validation');
+	}
+	/**
+	 * Index Page for this controller.
+	 *
+	 * Maps to the following URL
+	 * 		http://example.com/index.php/welcome
+	 *	- or -
+	 * 		http://example.com/index.php/welcome/index
+	 *	- or -
+	 * Since this controller is set as the default controller in
+	 * config/routes.php, it's displayed at http://example.com/
+	 *
+	 * So any other public methods not prefixed with an underscore will
+	 * map to /index.php/welcome/<method_name>
+	 * @see https://codeigniter.com/user_guide/general/urls.html
+	 */
+
+
+
+
+	public function index() 
+	{
+		$data['member'] = $this->mem->get_information_member();
+
+		$this->load->view('layouts/header');
+		$this->load->view('company/form_apply_job',$data);
+		$this->load->view('layouts/footer');
+	}
+
+	public function insert_form_apply_job()
+	{
+		$insert = $this->input->post("insert");
+		// echo $insert;
+		if($insert != '1')
+		{
+			$type = $this->url->segment(3);
+			$data = array(
+				'type' => $type
+			);
+
+			$this->load->view('layouts/header',$data);
+			$this->load->view('company/form_apply_job');
+			$this->load->view('layouts/footer');
+		}else{
+			$this->form_validation->set_message('required', '<font color="red">กรุณาระบุ %s</font>');
+			// $this->form_validation->set_message('min_length', '<font color="red">%sไม่ถูกต้อง</font>');
+			// $this->form_validation->set_message('max_length', '<font color="red">%sไม่ถูกต้อง</font>');
+			// $this->form_validation->set_message('numeric', '<font color="red">กรอก%sเป็นตัวเลขเท่านั้น</font>');
+
+			$this->form_validation->set_rules('father_name', 'บิดา ชื่อ', 'trim|required');
+			$this->form_validation->set_rules('father_lname', 'บิดา สกุล', 'trim|required');
+			$this->form_validation->set_rules('father_age', 'บิดา อายุ', 'trim|required');
+			$this->form_validation->set_rules('father_occupation', 'อาชีพ ชื่อ', 'trim|required');
+			$this->form_validation->set_rules('mother_name', 'มารดา ชื่อ', 'trim|required');
+		}
+		if($this->form_validation->run() == FALSE)
+		{
+			echo "2222";
+			// $type = $this->url->segment(3);
+			// $data = array(
+			// 	'type' => $type 
+			// );	
+			// $this->load->view('layouts/header',$data);
+			// $this->load->view('company/form_apply_job');
+			// $this->load->view('layouts/footer');
+		}else{
+			$data = array();
+			$data['father_name_application '] = $this->input->post('father_name');
+			$data['father_lname_application '] = $this->input->post('father_lname');
+			$data['father_age_application '] = $this->input->post('father_age');
+			$data['father_occupation_application '] = $this->input->post('father_occupation');
+			$data['mother_name_application '] = $this->input->post('mother_name');
+
+			// var_dump($data);
+			$this->apply->insert_apply_for_job($data);
+			
+		}
+	}
+
+
+
+
+
+
+
+}
